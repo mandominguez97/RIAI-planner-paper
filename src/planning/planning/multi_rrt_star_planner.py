@@ -298,63 +298,19 @@ class MultiRRTStarPlanner():
         return best_results
     
 
-    def prune_path(
-            self, 
-            goal_node, 
-            obstacles
-        ):
-        """
-        Recibe goal_node y elimina nodos intermedios siempre que el segmento directo
-        entre puntos consecutivos no tenga colisión.
-        Reescribe los parents y recalcula costes.
+    def prune_path(self, goal_node, obstacles):
+        if goal_node is None or goal_node._parent is None or goal_node._parent._parent is None:
+            return goal_node
 
-        Devuelve el nodo final (goal_node) con el nuevo parent-chain.
-        """
-
-        # 1) obtener lista de nodos
-        path = []
-        n = goal_node
-        while n is not None:
-            path.append(n)
-            n = n._parent
-        path.reverse()  # orden correcto
-
-        # 2) ejecutamos el podado greedy
-        pruned = [path[0]]
-        i = 0
-        while True:
-            j = i + 2
-            last_valid = i + 1
-
-            while j < len(path):
-                if check_restrictions(
-                    path[j], 
-                    pruned[-1], 
-                    obstacles,
-                    self._upper_limit,
-                    self._delta_t
-                ):
-                    last_valid = j
-                    j += 1
-                else:
-                    break
-
-            pruned.append(path[last_valid])
-
-            if last_valid == len(path)-1:
-                break
-
-            i = last_valid
-
-        # 3) reconstruir parent-chain y recalcular costes
-        pruned[0]._parent = None
-        pruned[0]._cost = 0.0
-
-        for k in range(1, len(pruned)):
-            pruned[k].set_parent(pruned[k-1], self._space_coef, self._time_coef)
-
-        return pruned[-1]  # nuevo goal_node podado
-
+        aux_node = goal_node
+        while aux_node._parent._parent is not None:
+            if check_restrictions(aux_node, aux_node._parent._parent, obstacles, self._upper_limit, self._delta_t):
+                aux_node.set_parent(aux_node._parent._parent, self._space_coef, self._time_coef)
+            else:
+                aux_node = aux_node._parent
+        
+        
+        return goal_node
 
     def plan(
         self, 
@@ -393,7 +349,12 @@ class MultiRRTStarPlanner():
                 p.position.z = node._position[2]
                 positions.append(p)
                 node = node._parent
-
+            p = Pose()
+            p.position.x = node._position[0]
+            p.position.y = node._position[1]
+            p.position.z = node._position[2]
+            positions.append(p)
+            
             positions = positions[::-1]
             dts = [dt*n for n in range(len(positions))]
             velocities = [Twist() for _ in range(len(positions))]
