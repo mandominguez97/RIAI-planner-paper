@@ -63,8 +63,8 @@ wait_for_simulator() {
 
 # Simulation parameters
 #_______________________________________________________________
-PLAN_TYPE=("0" "1" "2" "3") # RRT RRT* RRT-HUNGARIAN RANDOM
-NUM_VEHICLES=("1" "2" "3" "4")
+PLAN_TYPE=("1" "2" "3") # RRT RRT* RRT-HUNGARIAN RANDOM
+NUM_VEHICLES=("5" "6" "7" "8")
 N_POINTS=500
 MISSION_FRAME="[108.28299713134766,-94.181564331054688,15.0]"
 MISSION_RADIUS=("4.0" "15.0" "6.0")
@@ -74,7 +74,7 @@ N_STEPS=("2000 3000")
 SPACE_COEF=(".5" ".8" "1.0")
 TIME_COEF=(".5" ".2" ".0")
 AVG_SPEED=("1.0" "2.0")
-SPATIAL_TOL=("1.0" "1.5")
+SPATIAL_TOL=("1.0")
 TIME_TOL=("100")
 CYLINDER_HEIGHT=3.0
 CYLINDER_RADIUS=1.2
