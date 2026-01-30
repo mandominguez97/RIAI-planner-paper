@@ -48,7 +48,7 @@ for((vehicle=1; vehicle<=num_vehicles; vehicle++)); do
     camera_topic="/world/${PX4_GZ_WORLD}/model/${PX4_SIM_MODEL}_${vehicle}/link/mono_cam/base_link/sensor/camera/image"
     camera_topics="$camera_topics $camera_topic"
 
-    y_n=$((y_0 - (vehicle-1) * 2))
+    y_n=$((y_0 - (vehicle-1) * 4))
     export PX4_UXRCE_DDS_NS="px4_${vehicle}"
     export PX4_GZ_MODEL_POSE="90,${y_n},3,0,0,0"
     

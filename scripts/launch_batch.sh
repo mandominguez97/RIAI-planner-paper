@@ -74,12 +74,12 @@ N_STEPS=("2000 3000")
 SPACE_COEF=(".5" ".8" "1.0")
 TIME_COEF=(".5" ".2" ".0")
 AVG_SPEED=("1.0" "2.0")
-SPATIAL_TOL=("1.0")
+SPATIAL_TOL=("1.5")
 TIME_TOL=("100")
 CYLINDER_HEIGHT=3.0
 CYLINDER_RADIUS=1.2
 MAX_ATTEMPS=5
-MAX_MINUTES=5
+MAX_MINUTES=120
 NUM_SIMULATIONS=5
 #_______________________________________________________________
 

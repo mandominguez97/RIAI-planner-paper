@@ -188,6 +188,7 @@ class MultiRRTStarPlanner():
                     "final_cost": final_cost,
                     "final_time": final_time 
                 }
+                print(f"Candidate trajectory: {key, n_iterations, final_cost}")
                 
         return results
     
@@ -244,39 +245,44 @@ class MultiRRTStarPlanner():
 
         while remaining_starts and remaining_goals:
             
-            costs = [[None for _ in remaining_goals] for _ in remaining_starts]
+            costs = [[float('inf') for _ in remaining_goals] for _ in remaining_starts]
             start_name_to_idx = {s[0]: i for i, s in enumerate(remaining_starts)}
             goal_name_to_idx = {g[0]: i for i, g in enumerate(remaining_goals)}
+            print(f"starts: {remaining_starts}, goals: {remaining_goals}")
             
-            while any(c is None for row in costs for c in row):
-                current_results = self.run_all_combinations(
-                    remaining_starts,        
-                    remaining_goals,
-                    speed,
-                    obstacles,
-                    bias_prob,
-                    limit,
-                    spatial_tol,
-                    time_tol,
-                    alg_type
-                )
+            # while any(c is None for row in costs for c in row):
+            current_results = self.run_all_combinations(
+                remaining_starts,        
+                remaining_goals,
+                speed,
+                obstacles,
+                bias_prob,
+                limit,
+                spatial_tol,
+                time_tol,
+                alg_type
+            )
                 
-                for id in current_results.keys(): 
-                    agent_name = id.split('->')[0].strip()
-                    goal_name = id.split('->')[1].strip()
+            for id in current_results.keys(): 
+                agent_name = id.split('->')[0].strip()
+                goal_name = id.split('->')[1].strip()
                     
-                    agent_idx = start_name_to_idx.get(agent_name)
-                    goal_idx = goal_name_to_idx.get(goal_name)
+                agent_idx = start_name_to_idx.get(agent_name)
+                goal_idx = goal_name_to_idx.get(goal_name)
                     
-                    if agent_idx is None or goal_idx is None:
-                        continue
+                if agent_idx is None or goal_idx is None:
+                    continue
                     
-                    new_cost = current_results[id]["final_cost"]
+                new_cost = current_results[id]["final_cost"]
+                if new_cost is not None:
+                    costs[agent_idx][goal_idx] = new_cost
 
-                    if costs[agent_idx][goal_idx] is None and new_cost is not None:
-                        costs[agent_idx][goal_idx] = new_cost
-            
+                    # new_cost = current_results[id]["final_cost"]
+                    # if costs[agent_idx][goal_idx] is None and new_cost is not None:
+                    #     costs[agent_idx][goal_idx] = new_cost
+            print(f"costs: {costs}")
             agent_idx, goal_idx = self.hungarian_planner.plan(costs)
+            print(f"Hungarian output: {agent_idx}, {goal_idx}")
             best_cost = .0
             best_key = None
 
@@ -312,7 +318,7 @@ class MultiRRTStarPlanner():
                 obstacles.append(path_obstacle)
 
             start_name, goal_name = best_key.split(" -> ")
-
+            print(f"UAV plan completed: {best_key}")
             remaining_starts = [s for s in remaining_starts if s[0] != start_name]
             remaining_goals  = [g for g in remaining_goals  if g[0] != goal_name]
             step += 1
