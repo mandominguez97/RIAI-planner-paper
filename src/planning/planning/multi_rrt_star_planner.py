@@ -87,7 +87,7 @@ class MultiRRTStarPlanner():
         dt = .5
         assigned_uavs = []
         trajectories = []
-
+        print(f"in plan paths")
         for agent_idx, (start_pose, goal_pose) in enumerate(zip(start_poses, goal_poses)):
             
             poses = []
@@ -103,13 +103,14 @@ class MultiRRTStarPlanner():
                     self._time_coef,
                     alg_type
                 )
-               
+                print(f"before planning") 
                 goal_node, _, _ = planner.plan(
                     start_pose, goal_pose, 
                     speed, obstacles, 
                     bias_prob, limit, 
                     spatial_tol, time_tol
                 )
+                print(f"goal node: {goal_node}")
            
             node = goal_node
             while(node._parent is not None):

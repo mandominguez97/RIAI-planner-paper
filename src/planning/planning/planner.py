@@ -203,10 +203,16 @@ class Planner():
         
         agent_idx = list(range(len(start_poses)))
         goal_idx = list(range(len(goal_poses)))
+        
+        num_assignments = min(len(start_poses), len(goal_poses))
+        
         random.shuffle(goal_idx)
-
-        goal_poses_assigned = [goal_poses[goal_idx[i]][1] for i in range(len(agent_idx))]
-        start_positions = [s[1] for s in start_poses]
+        
+        agent_idx_assigned = agent_idx[:num_assignments]
+        goal_idx_assigned = goal_idx[:num_assignments]
+        
+        goal_poses_assigned = [goal_poses[goal_idx_assigned[i]][1] for i in range(num_assignments)]
+        start_positions = [start_poses[i][1] for i in range(num_assignments)]
         
         _, _, trajectories = self.rtt_planner.plan_paths(
             start_positions, 
@@ -219,7 +225,8 @@ class Planner():
             self._time_tol,
             self._obstacle_radius
         )
-        return agent_idx, goal_idx[:len(agent_idx)], trajectories
+        
+        return agent_idx_assigned, goal_idx_assigned, trajectories
 
 
     def multi_rrt_star_plan(self, start_poses, goal_poses, obstacles):
